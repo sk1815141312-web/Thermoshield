@@ -1102,15 +1102,14 @@ def build_map(origin, destination, route_options, selected_name):
     all_lats = [origin["lat"], destination["lat"]]
     all_lons = [origin["lon"], destination["lon"]]
 
-    # Standard OpenStreetMap tiles — folium's built-in default, and the one
-    # tile source that has never required an API key. Switched to this after
-    # confirming CartoDB's basemap CDN now requires a key even on its raw
-    # XYZ URLs (visible as "API KEY REQUIRED" watermarks on the map) —
-    # reliability matters more than the dark theme at this point.
+    # Esri World Street Map — a free, no-key tile source (unlike CartoDB's
+    # now-restricted basemaps) that renders place names in English/
+    # international form everywhere, rather than the local script.
     fmap = folium.Map(
         location=[origin["lat"], origin["lon"]],
         zoom_start=8,
-        tiles="OpenStreetMap",
+        tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+        attr="Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom",
     )
 
     # --- Heat overlay: a visual glow along each route, weighted by its
