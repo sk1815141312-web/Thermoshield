@@ -775,7 +775,7 @@ def get_current_weather(lat, lon):
         return None
 
 
-def get_fortyguard_temperature(lat, lon, api_key, max_wait_seconds=10):
+def get_fortyguard_temperature(lat, lon, api_key, max_wait_seconds=4):
     """
     OPTIONAL, best-effort enhancement: tries to get a live temperature
     reading from FortyGuard's own Temperature API (the hackathon's sponsor
