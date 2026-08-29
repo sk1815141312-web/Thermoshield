@@ -369,39 +369,13 @@ def inject_custom_css():
 @contextmanager
 def thermo_loading(status_text: str):
     """
-    Context manager that shows a big animated ThermoShield loading indicator
-    (spinning ring + pulsing fire icon) while a block of code runs (API
-    calls etc.), then clears it automatically — replaces the plain
-    st.spinner text with a branded, professional-looking indicator.
-
-    The ring's color theme (fire / blue / rainbow) is picked once per new
-    search (see LOADER_THEMES + the reset logic near route_selector) and
-    reused for every thermo_loading() call within that same search, so all
-    the loading moments in one run match — but the next search gets a
-    different theme automatically.
-
+    Simple, guaranteed-reliable loading indicator — just wraps Streamlit's
+    own built-in spinner. Kept as a thin wrapper (rather than removing it
+    everywhere it's called) so no other code needs to change.
     Usage: `with thermo_loading("Fetching routes..."): ...`
     """
-    theme = st.session_state.get("loader_theme", "fire")
-    placeholder = st.empty()
-    placeholder.markdown(
-        f"""
-        <div class="thermo-loader-wrapper">
-            <div class="thermo-loader-ring-outer">
-                <div class="thermo-loader-ring thermo-loader-ring--{theme}"></div>
-            </div>
-            <div class="thermo-loader-text">LOADING THERMOSHIELD AI</div>
-            <div class="thermo-loader-subtext">
-                [ {status_text} <span class="thermo-loader-dots"><span>.</span><span>.</span><span>.</span></span> ]
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    try:
+    with st.spinner(f"🔥 ThermoShield AI — {status_text}"):
         yield
-    finally:
-        placeholder.empty()
 
 
 # ---------------------------------------------------------------------------
@@ -1130,7 +1104,7 @@ def build_map(origin, destination, route_options, selected_name):
         for pt in coords_latlon[::step]:
             heat_points.append([pt[0], pt[1], weight])
     if heat_points:
-        HeatMap(heat_points, radius=18, blur=22, min_opacity=0.25).add_to(fmap)
+        HeatMap(heat_points, radius=10, blur=8, min_opacity=0.2).add_to(fmap)
 
     for opt in route_options:
         coords_latlon = [[lat, lon] for lon, lat in opt["geometry"]]
