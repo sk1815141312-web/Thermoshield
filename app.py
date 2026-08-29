@@ -123,6 +123,22 @@ DEMO_PRESETS = [
     {"label": "🇵🇰 Karachi → Hyderabad", "origin": "Karachi", "destination": "Hyderabad"},
 ]
 
+# Hard-coded coordinates for exactly the cities used in Demo Mode, so those
+# buttons never depend on Nominatim's live geocoding — Nominatim is a free,
+# shared, rate-limited service that can occasionally be slow or briefly
+# reject requests under heavy use. Manually typed searches still use live
+# geocoding as normal; this table only short-circuits the Demo Mode buttons.
+DEMO_CITY_COORDS = {
+    "Phoenix": {"lat": 33.4484, "lon": -112.0740, "display_name": "Phoenix, Arizona, United States"},
+    "Houston": {"lat": 29.7604, "lon": -95.3698, "display_name": "Houston, Texas, United States"},
+    "Dubai": {"lat": 25.2048, "lon": 55.2708, "display_name": "Dubai, United Arab Emirates"},
+    "Abu Dhabi": {"lat": 24.4539, "lon": 54.3773, "display_name": "Abu Dhabi, United Arab Emirates"},
+    "Peshawar": {"lat": 34.0151, "lon": 71.5249, "display_name": "Peshawar, Khyber Pakhtunkhwa, Pakistan"},
+    "Islamabad": {"lat": 33.6844, "lon": 73.0479, "display_name": "Islamabad, Pakistan"},
+    "Karachi": {"lat": 24.8607, "lon": 67.0011, "display_name": "Karachi, Sindh, Pakistan"},
+    "Hyderabad": {"lat": 25.3960, "lon": 68.3578, "display_name": "Hyderabad, Sindh, Pakistan"},
+}
+
 # Loading-ring color themes, cycled once per new search (see thermo_loading()
 # and the reset logic near route_selector) so consecutive searches don't
 # always show the exact same loader.
@@ -475,6 +491,13 @@ def geocode_location(raw_query: str):
     query = raw_query.strip()
     if not query:
         return None
+
+    # Short-circuit for the exact Demo Mode cities — skips Nominatim
+    # entirely for these, so the Demo buttons are immune to that free
+    # service's occasional slowness/rate limits.
+    for city_name, coords in DEMO_CITY_COORDS.items():
+        if query.lower() == city_name.lower():
+            return {"lat": coords["lat"], "lon": coords["lon"], "display_name": coords["display_name"], "is_country": False}
 
     attempts = [
         {"q": query, "featuretype": "city"},
