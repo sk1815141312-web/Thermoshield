@@ -1136,11 +1136,22 @@ def build_map(origin, destination, route_options, selected_name):
 
         is_selected = opt["raw_name"] == selected_name
         label = opt["name"] + (" (Estimated)" if opt["estimated"] else "")
+
+        # A dark "halo" line drawn first, slightly wider than the colored
+        # line on top of it, so every route stays clearly visible no matter
+        # what colors/detail the underlying map tiles have.
+        folium.PolyLine(
+            locations=coords_latlon,
+            color="#0B0F19",
+            weight=13 if is_selected else 9,
+            opacity=0.9,
+        ).add_to(fmap)
+
         folium.PolyLine(
             locations=coords_latlon,
             color=opt["risk_color"],
-            weight=9 if is_selected else 6,  # thicker lines = easier to tap on mobile
-            opacity=0.95 if is_selected else 0.55,
+            weight=8 if is_selected else 5,  # thicker lines = easier to tap on mobile
+            opacity=1.0 if is_selected else 0.9,
             tooltip=(
                 f"{label} | {opt['distance_km']} km | {format_duration(opt['duration_min'])} | "
                 f"Thermal Score: {opt['thermal_score']}°C ({opt['risk_category']})"
